@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Plant Parenthood
 ## A smart plant pot
 
@@ -22,3 +23,7 @@ bash
 Copy code
 uvicorn app:app --reload
 Open the browser and visit http://127.0.0.1:8000.
+=======
+# Embedded
+
+>>>>>>> eb7174c (IGNORE)
