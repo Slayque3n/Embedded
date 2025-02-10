@@ -7,7 +7,7 @@ def get_moisture_changes(plant_id, db_name="plant_management.db"):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT * FROM Changes WHERE change_description = 'moisture' AND plant_id = ?
+        SELECT * FROM Changes WHERE change_description = 'moisture' AND plant_id = ? ORDER BY time DESC LIMIT 1
     """, (plant_id,))
     results = cursor.fetchall()
     conn.close()
@@ -20,7 +20,7 @@ def get_temperature_changes(plant_id, db_name="plant_management.db"):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT * FROM Changes WHERE change_description = 'temperature' AND plant_id = ?
+        SELECT * FROM Changes WHERE change_description = 'temperature' AND plant_id = ? ORDER BY time DESC LIMIT 1
     """, (plant_id,))
     results = cursor.fetchall()
     conn.close()
@@ -33,7 +33,7 @@ def get_light_changes(plant_id, db_name="plant_management.db"):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT * FROM Changes WHERE change_description = 'light' AND plant_id = ?
+        SELECT * FROM Changes WHERE change_description = 'light' AND plant_id = ? ORDER BY time DESC LIMIT 1
     """, (plant_id,))
     results = cursor.fetchall()
     conn.close()
