@@ -34,19 +34,16 @@ def initialize_database(db_name="plant_management.db"):
         FOREIGN KEY (owner_id) REFERENCES Owners(owner_id),
         FOREIGN KEY (plant_id) REFERENCES Changes(plant_id)
     )
-    """)
-
+    """)    
     # Commit changes and close connection
     conn.commit()
     conn.close()
-
 if __name__ == "__main__":
     try:
         initialize_database()
         print("Database initialized successfully.")
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
-
 """
 # Example: Insert data into tables
 # Add an owner
