@@ -1,5 +1,7 @@
 import socket
 import threading
+from databse import initialize_database
+import sqlite3
 
 # Server Functionality
 def handle_client(client_socket, address):
@@ -11,6 +13,15 @@ def handle_client(client_socket, address):
                 break
             print(f"Received from {address}: {message}")
             client_socket.send("Message received".encode('utf-8'))
+            id,data=message.split(":")
+            type,value=data.split(",")
+            conn = sqlite3.connect("plant_management.db")
+            cursor = conn.cursor()
+            cursor.execute("""INSERT INTO Changes (plant_id, change_description, value) VALUES (?, ?, ?)""", (id, type, value))
+            conn.commit()
+            conn.close()
+
+
         except:
             print(f"Connection closed with {address}")
             break
@@ -28,4 +39,5 @@ def start_server(host='127.0.0.1', port=8080):
         client_thread.start()
 
 if __name__ == "__main__":
+    initialize_database()
     start_server()
