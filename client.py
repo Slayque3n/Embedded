@@ -16,7 +16,7 @@ while ip == 0:
     connectwifi(SSID, PASSWORD)
 
 # Client Functionality
-def start_client(host='127.0.0.1', port=8080):
+def start_client(host='0.0.0.0', port=8080):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((host, port))
     print(f"Connected to server at {host}:{port}")

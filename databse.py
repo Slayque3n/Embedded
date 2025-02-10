@@ -47,7 +47,7 @@ if __name__ == "__main__":
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
 
-
+"""
 # Example: Insert data into tables
 # Add an owner
 cursor.execute("INSERT INTO Owners (owner_name, contact_info) VALUES (?, ?)",
@@ -79,3 +79,4 @@ for row in cursor.execute("SELECT * FROM Ownership"):
 
 # Close the connection
 conn.close()
+"""
