@@ -17,6 +17,13 @@ def initialize_database(db_name="plant_management.db"):
         value TEXT NOT NULL
     )
     """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Plants (
+        plant_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        plant_name TEXT NOT NULL,
+        plant_type_name TEXT NOT NULL
+    )
+    """)
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Owners (

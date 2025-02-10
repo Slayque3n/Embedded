@@ -58,27 +58,38 @@ def get_plants_for_owner(owner_id, db_name="plant_management.db"):
     conn.close()
     return plant_ids
 
-def add_plant_for_owner(owner_id, plant_name, db_name="plant_management.db"):
+def add_plant_for_owner(owner_id, plant_name, plant_type, db_name="plant_management.db"):
     """
-    Adds a new plant to the database and assigns it to a specific owner.
+    Adds a new plant to the database, assigns it a plant type, and links it to an owner.
 
     :param owner_id: The ID of the owner.
     :param plant_name: The name of the plant.
+    :param plant_type: The type of the plant (e.g., "Succulent", "Fern").
     :param db_name: The SQLite database file name.
     :return: The new plant's ID.
     """
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
 
-    # Step 1: Insert the new plant into the Plants table
-    cursor.execute("""
-    INSERT INTO Plants (plant_name) VALUES (?)
-    """, (plant_name,))
-    
-    # Get the newly inserted plant's ID
-    plant_id = cursor.lastrowid
+    # Step 1: Check if the plant type exists
+    cursor.execute("SELECT plant_type_id FROM PlantTypes WHERE plant_type_name = ?", (plant_type,))
+    result = cursor.fetchone()
 
-    # Step 2: Assign the plant to the owner in the Ownership table
+    if result:
+        plant_type_id = result[0]  # Get existing plant_type_id
+    else:
+        # Step 2: Insert the new plant type if not found
+        cursor.execute("INSERT INTO PlantTypes (plant_type_name) VALUES (?)", (plant_type,))
+        plant_type_id = cursor.lastrowid  # Get the new plant_type_id
+
+    # Step 3: Insert the new plant with plant_type_id
+    cursor.execute("""
+    INSERT INTO Plants (plant_name, plant_type_id) VALUES (?, ?)
+    """, (plant_name, plant_type_id))
+
+    plant_id = cursor.lastrowid  # Get the newly inserted plant's ID
+
+    # Step 4: Assign the plant to the owner in the Ownership table
     cursor.execute("""
     INSERT INTO Ownership (owner_id, plant_id) VALUES (?, ?)
     """, (owner_id, plant_id))
@@ -86,8 +97,6 @@ def add_plant_for_owner(owner_id, plant_name, db_name="plant_management.db"):
     # Commit changes and close the connection
     conn.commit()
     conn.close()
-
-    return plant_id
 
 def add_owner(owner_name, contact_info, db_name="plant_management.db"):
     """
