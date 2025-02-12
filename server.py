@@ -1,6 +1,7 @@
 import socket
 import threading
 from databse import initialize_database
+from databse import print_database 
 import sqlite3
 import time
 
@@ -41,7 +42,7 @@ def start_server(host="192.168.236.160", port=8080):
         time.sleep(0.01)
 
 if __name__ == "__main__":
-    
-    initialize_database()
-    start_server()
+    print_database()
+    #initialize_database()
+    #start_server()
  
