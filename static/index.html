@@ -12,14 +12,22 @@
     <div class="container">
         <h2>My Smart Plant</h2>
         <div>
+            <label for="plant-select">Select Plant: </label>
+            <select id="plant-select" onchange="switchPlant()">
+                <!-- Options will be dynamically added here -->
+            </select>
+            <button onclick="removePlant()">Remove Plant</button>
+        </div>
+        <div>
             <span class="icon" id="leaf">🍃</span>
             <span class="icon" id="plant">🌱</span>
         </div>
         <p><strong>Moisture:</strong> <span id="moisture">94%</span></p>
         <p><strong>Light:</strong> <span id="light">7%</span></p>
         <p><strong>Temperature:</strong> <span id="temperature">29°C</span></p>
-        <p><strong>Happiness:</strong> <span id="happiness">60%</span></p>
+        <p><strong>Humidity:</strong> <span id="humidity">60%</span></p>
         <button onclick="updatePlant()">Update Plant Status</button>
+        <button onclick="registerNewPlant()">Register New Plant</button>
     </div>
 
     <script src="static/script.js"></script>

@@ -38,6 +38,20 @@ def get_light_changes(plant_id, db_name="plant_management.db"):
     results = cursor.fetchall()
     conn.close()
     return results
+
+def get_humidity_changes(plant_id, db_name="plant_management.db"):
+    """
+    Fetch all rows where change_description is 'humidity' for a specific plant_id.
+    """
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM Changes WHERE change_description = 'humidity' AND plant_id = ? ORDER BY time DESC LIMIT 1
+    """, (plant_id,))
+    results = cursor.fetchall()
+    conn.close()
+    return results
+
 def get_plants_for_owner(owner_id, db_name="plant_management.db"):
     """
     Retrieves all plant IDs associated with a given owner.

@@ -69,11 +69,50 @@ body {
     to { transform: rotate(5deg); }
 }
 
+select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
 button {
+    margin: 5px;
     background: #ff4081;
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+button:hover {
+    background: #e91e63;
+}
+
+button.remove {
+    background: #ff1744;
+    color: white;
+}
+
+button.remove:hover {
+    background: #d50000;
+}
+
+input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* styles.css */
+a {
+    color: #ff4081; /* Match the pink color used in the theme */
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+    text-decoration: underline; /* Add underline on hover */
 }

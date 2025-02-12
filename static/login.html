@@ -1,0 +1,29 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Plant Parenthood</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="background-animation" id="background"></div>
+    <div class="container">
+        <h1>🌿 <span style="color: #ff4081;">Plant Parenthood</span></h1>
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p id="error-message" style="color: red; display: none;"></p>
+        <p>Don't have an account? <a href="/register">Register here</a></p>
+    </div>
+    
+
+    <script src="static/login.js"></script>
+</body>
+</html>
