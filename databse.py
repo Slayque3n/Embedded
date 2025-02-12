@@ -29,7 +29,8 @@ def initialize_database(db_name="plant_management.db"):
     CREATE TABLE IF NOT EXISTS Owners (
         owner_id INTEGER PRIMARY KEY AUTOINCREMENT,
         owner_name TEXT NOT NULL,
-        contact_info TEXT
+        contact_info TEXT NOT NULL,
+        password TEXT NOT NULL
     )
     """)
 
