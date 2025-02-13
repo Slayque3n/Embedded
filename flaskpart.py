@@ -79,22 +79,22 @@ async def add_plant_for_owner(
 @app.post("/add_owner")
 async def add_owner(
     owner_name: str = Form(...),
-    contact_info: str = Form(...)
+    email: str = Form(...)
 ):
     try:
-        owner_id = funcforweb.add_owner(owner_name, contact_info)
+        owner_id = funcforweb.add_owner(owner_name, email)
         return JSONResponse({"status": "success", "owner_id": owner_id})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # Endpoint to update contact info for an owner
-@app.post("/update_contact_info")
-async def update_contact_info(
+@app.post("/update_email")
+async def update_email(
     owner_id: int = Form(...),
-    new_contact_info: str = Form(...)
+    new_email: str = Form(...)
 ):
     try:
-        funcforweb.update_contact_info(owner_id, new_contact_info)
+        funcforweb.update_email(owner_id, new_email)
         return JSONResponse({"status": "success", "message": "Contact info updated successfully"})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
