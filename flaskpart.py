@@ -1,3 +1,4 @@
+# flaskpart.py
 from fastapi import FastAPI, Form, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -44,7 +45,7 @@ async def get_light_changes(plant_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-    # Endpoint to get light changes for a plant
+# Endpoint to get humidity changes for a plant
 @app.get("/humidity_changes/{plant_id}")
 async def get_humidity_changes(plant_id: int):
     try:
@@ -79,10 +80,11 @@ async def add_plant_for_owner(
 @app.post("/add_owner")
 async def add_owner(
     owner_name: str = Form(...),
-    email: str = Form(...)
+    email: str = Form(...),
+    password: str = Form(...)
 ):
     try:
-        owner_id = funcforweb.add_owner(owner_name, email)
+        owner_id = funcforweb.add_owner(owner_name, email, password)
         return JSONResponse({"status": "success", "owner_id": owner_id})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -108,20 +110,6 @@ async def remove_plant(plant_id: int = Form(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-#login pages
-def verify_login(email, password):
-    conn = sqlite3.connect("plant_management.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT owner_id, password FROM Owners WHERE email = ?", (email,))
-    user = cursor.fetchone()
-    conn.close()
-
-    if user:
-        owner_id, hashed_password = user
-        if hashlib.sha256(password.encode()).hexdigest() == hashed_password:
-            return owner_id
-    return None
-
 # Login endpoint
 @app.post("/login")
 async def login(request: Request):
@@ -166,7 +154,21 @@ async def register(request: Request):
     finally:
         conn.close()
 
-# flaskpart.py
+# Serve the register page
 @app.get("/register")
 async def serve_register():
     return FileResponse("static/register.html")
+
+# flaskpart.py
+def verify_login(email, password):
+    conn = sqlite3.connect("plant_management.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT owner_id, password FROM Owners WHERE email = ?", (email,))  # Add a comma after email
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        owner_id, hashed_password = user
+        if hashlib.sha256(password.encode()).hexdigest() == hashed_password:
+            return owner_id
+    return None
