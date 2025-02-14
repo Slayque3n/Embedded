@@ -9,6 +9,9 @@ def initialize_database(db_name="plant_management.db"):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
 
+    # Enable foreign keys
+    cursor.execute("PRAGMA foreign_keys = ON;")
+
     # Create tables if they do not exist
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Changes (
@@ -16,7 +19,8 @@ def initialize_database(db_name="plant_management.db"):
         time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    
         plant_id INTEGER NOT NULL,
         change_description TEXT NOT NULL,
-        value TEXT NOT NULL
+        value TEXT NOT NULL,
+        FOREIGN KEY (plant_id) REFERENCES Plants(plant_id) ON DELETE CASCADE
     )
     """)
     cursor.execute("""
@@ -38,10 +42,11 @@ def initialize_database(db_name="plant_management.db"):
         ownership_id INTEGER PRIMARY KEY AUTOINCREMENT,
         owner_id INTEGER NOT NULL,
         plant_id INTEGER NOT NULL,
-        FOREIGN KEY (owner_id) REFERENCES Owners(owner_id),
-        FOREIGN KEY (plant_id) REFERENCES Plants(plant_id)
+        FOREIGN KEY (owner_id) REFERENCES Owners(owner_id) ON DELETE CASCADE,
+        FOREIGN KEY (plant_id) REFERENCES Plants(plant_id) ON DELETE CASCADE
     )
-    """)    
+    """)
+
     # Commit changes and close connection
     conn.commit()
     conn.close()
@@ -70,9 +75,12 @@ def initialize_database(db_name="plant_management.db"):
 
     # Commit changes
     conn.commit()
-
+if __name__ == "__main__":
+    db_name="plant_management.db"
     # # Query and display data
     # print("Changes:")
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
     for row in cursor.execute("SELECT * FROM Changes"):
         print(row)
 

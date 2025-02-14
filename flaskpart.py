@@ -30,7 +30,7 @@ async def get_most_recent_moisture(plant_id: int):
 @app.get("/most_recent_light/{plant_id}")
 async def get_most_recent_light(plant_id: int):
     try:
-        value = funcforweb.get_most_recent_change(plant_id, "light")
+        value = funcforweb.get_most_recent_change(plant_id, "Lux")
         return JSONResponse({"value": value})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -38,7 +38,7 @@ async def get_most_recent_light(plant_id: int):
 @app.get("/most_recent_temperature/{plant_id}")
 async def get_most_recent_temperature(plant_id: int):
     try:
-        value = funcforweb.get_most_recent_change(plant_id, "temperature")
+        value = funcforweb.get_most_recent_change(plant_id, "Temperature")
         return JSONResponse({"value": value})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -46,7 +46,7 @@ async def get_most_recent_temperature(plant_id: int):
 @app.get("/most_recent_humidity/{plant_id}")
 async def get_most_recent_humidity(plant_id: int):
     try:
-        value = funcforweb.get_most_recent_change(plant_id, "humidity")
+        value = funcforweb.get_most_recent_change(plant_id, "Humidity")
         return JSONResponse({"value": value})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
