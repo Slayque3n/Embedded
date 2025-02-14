@@ -42,7 +42,7 @@ def start_server(host="192.168.236.160", port=8080):
         time.sleep(0.01)
 
 if __name__ == "__main__":
-    print_database()
-    #initialize_database()
-    #start_server()
+    
+    initialize_database()
+    start_server()
  
