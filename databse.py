@@ -1,7 +1,7 @@
-# databse.py
-# databse.py
 import sqlite3
+import hashlib
 
+# databse.py
 def initialize_database(db_name="plant_management.db"):
     """
     Creates and initializes the SQLite database with necessary tables.
@@ -22,8 +22,7 @@ def initialize_database(db_name="plant_management.db"):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Plants (
         plant_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        plant_name TEXT NOT NULL,
-        plant_type TEXT NOT NULL  -- Directly store plant type as text
+        plant_name TEXT NOT NULL
     )
     """)
     cursor.execute("""
@@ -46,45 +45,44 @@ def initialize_database(db_name="plant_management.db"):
     # Commit changes and close connection
     conn.commit()
     conn.close()
-
-
-try:
-    initialize_database()
-    print("Database initialized successfully.")
-except sqlite3.Error as e:
-    print(f"An error occurred: {e}")
         
-# Example: Insert data into tables
-# Add an owner
-conn = sqlite3.connect("plant_management.db")
-cursor = conn.cursor()
+    # Example: Insert data into tables
+    # Add an owner
+    conn = sqlite3.connect("plant_management.db")
+    cursor = conn.cursor()
 
-cursor.execute("INSERT INTO Owners (owner_name,email,password) VALUES (?, ?,?)",
-               ("Alice", "alice@example.com","Penis"))
+    cursor.execute("INSERT INTO Owners (owner_name,email,password) VALUES (?, ?,?)",
+                ("Alice", "alice@example.com", hashlib.sha256("Password".encode()).hexdigest()))
 
-# Log a change
-cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
-               (1, "moisture","4.6"))
+    # Log a change
+    cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
+                (1, "moisture","94"))
+    cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
+                (1, "temperature","29"))
+    cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
+                (1, "light","7"))
+    cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
+                (1, "humidity","60"))
 
-# Map owner to plant
-cursor.execute("INSERT INTO Ownership (owner_id, plant_id) VALUES (?, ?)",
-               (1, 1))
+    # Map owner to plant
+    cursor.execute("INSERT INTO Ownership (owner_id, plant_id) VALUES (?, ?)",
+                (1, 1))
 
-# Commit changes
-conn.commit()
+    # Commit changes
+    conn.commit()
 
-# # Query and display data
-# print("Changes:")
-for row in cursor.execute("SELECT * FROM Changes"):
-    print(row)
+    # # Query and display data
+    # print("Changes:")
+    for row in cursor.execute("SELECT * FROM Changes"):
+        print(row)
 
-print("\nOwners:")
-for row in cursor.execute("SELECT * FROM Owners"):
-    print(row)
+    print("\nOwners:")
+    for row in cursor.execute("SELECT * FROM Owners"):
+        print(row)
 
-print("\nOwnership:")
-for row in cursor.execute("SELECT * FROM Ownership"):
-    print(row)
+    print("\nOwnership:")
+    for row in cursor.execute("SELECT * FROM Ownership"):
+        print(row)
 
-# Close the connection
-conn.close()
+    # Close the connection
+    conn.close()

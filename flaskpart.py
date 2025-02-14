@@ -26,6 +26,38 @@ async def get_moisture_changes(plant_id: int):
         return JSONResponse(results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/most_recent_moisture/{plant_id}")
+async def get_most_recent_moisture(plant_id: int):
+    try:
+        value = funcforweb.get_most_recent_change(plant_id, "moisture")
+        return JSONResponse({"value": value})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/most_recent_light/{plant_id}")
+async def get_most_recent_light(plant_id: int):
+    try:
+        value = funcforweb.get_most_recent_change(plant_id, "light")
+        return JSONResponse({"value": value})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/most_recent_temperature/{plant_id}")
+async def get_most_recent_temperature(plant_id: int):
+    try:
+        value = funcforweb.get_most_recent_change(plant_id, "temperature")
+        return JSONResponse({"value": value})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/most_recent_humidity/{plant_id}")
+async def get_most_recent_humidity(plant_id: int):
+    try:
+        value = funcforweb.get_most_recent_change(plant_id, "humidity")
+        return JSONResponse({"value": value})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Endpoint to get temperature changes for a plant
 @app.get("/temperature_changes/{plant_id}")
@@ -67,11 +99,10 @@ async def get_plants_for_owner(owner_id: int):
 @app.post("/add_plant_for_owner")
 async def add_plant_for_owner(
     owner_id: int = Form(...),
-    plant_name: str = Form(...),
-    plant_type: str = Form(...)
+    plant_name: str = Form(...)
 ):
     try:
-        funcforweb.add_plant_for_owner(owner_id, plant_name, plant_type)
+        funcforweb.add_plant_for_owner(owner_id, plant_name)
         return JSONResponse({"status": "success", "message": "Plant added successfully"})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -103,10 +134,23 @@ async def update_email(
 
 # Endpoint to remove a plant
 @app.post("/remove_plant")
-async def remove_plant(plant_id: int = Form(...)):
+async def remove_plant(request: Request):
     try:
+        # Manually parse the JSON payload from the request body
+        payload = await request.json()
+        plant_id = payload.get("plant_id")
+
+        # Validate that plant_id is provided and is an integer
+        if plant_id is None:
+            raise HTTPException(status_code=400, detail="plant_id is required")
+        if not isinstance(plant_id, int):
+            raise HTTPException(status_code=400, detail="plant_id must be an integer")
+
+        # Call the function to remove the plant
         funcforweb.remove_plant(plant_id)
         return JSONResponse({"status": "success", "message": "Plant removed successfully"})
+    except HTTPException as e:
+        raise e  # Re-raise HTTPException to return the error response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
@@ -160,6 +204,22 @@ async def serve_register():
     return FileResponse("static/register.html")
 
 # flaskpart.py
+@app.get("/plant_details/{plant_id}")
+async def get_plant_details(plant_id: int):
+    try:
+        conn = sqlite3.connect("plant_management.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT plant_id, plant_name FROM Plants WHERE plant_id = ?", (plant_id,))
+        plant = cursor.fetchone()
+        conn.close()
+
+        if plant:
+            return JSONResponse({"plant_id": plant[0], "plant_name": plant[1]})
+        else:
+            raise HTTPException(status_code=404, detail="Plant not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 def verify_login(email, password):
     conn = sqlite3.connect("plant_management.db")
     cursor = conn.cursor()

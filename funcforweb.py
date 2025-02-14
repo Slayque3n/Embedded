@@ -1,5 +1,23 @@
 # funcforweb.py
 import sqlite3
+import hashlib
+
+
+def get_most_recent_change(plant_id, change_description, db_name="plant_management.db"):
+    """
+    Fetch the most recent value for a specific change description (e.g., moisture, light, etc.) for a plant.
+    """
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT value FROM Changes 
+        WHERE plant_id = ? AND change_description = ? 
+        ORDER BY time DESC 
+        LIMIT 1
+    """, (plant_id, change_description))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None
 
 def get_moisture_changes(plant_id, db_name="plant_management.db"):
     """
@@ -66,17 +84,17 @@ def get_plants_for_owner(owner_id, db_name="plant_management.db"):
     conn.close()
     return plant_ids
 
-def add_plant_for_owner(owner_id, plant_name, plant_type, db_name="plant_management.db"):
+def add_plant_for_owner(owner_id, plant_name, db_name="plant_management.db"):
     """
     Adds a new plant to the database and links it to an owner.
     """
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
 
-    # Insert the new plant with plant_type directly
+    # Insert the new plant
     cursor.execute("""
-    INSERT INTO Plants (plant_name, plant_type) VALUES (?, ?)
-    """, (plant_name, plant_type))
+    INSERT INTO Plants (plant_name) VALUES (?)
+    """, (plant_name,))
 
     plant_id = cursor.lastrowid  # Get the newly inserted plant's ID
 
@@ -136,12 +154,17 @@ def remove_plant(plant_id, db_name="plant_management.db"):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
 
-    # Step 1: Remove plant from Ownership table first (to maintain foreign key constraints)
-    cursor.execute("DELETE FROM Ownership WHERE plant_id = ?", (plant_id,))
+    try:
+        # Step 1: Remove plant from Ownership table first (to maintain foreign key constraints)
+        cursor.execute("DELETE FROM Ownership WHERE plant_id = ?", (plant_id,))
 
-    # Step 2: Remove plant from Plants table
-    cursor.execute("DELETE FROM Plants WHERE plant_id = ?", (plant_id,))
+        # Step 2: Remove plant from Plants table
+        cursor.execute("DELETE FROM Plants WHERE plant_id = ?", (plant_id,))
 
-    # Commit changes and close the connection
-    conn.commit()
-    conn.close()
+        # Commit changes
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()
