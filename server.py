@@ -2,7 +2,7 @@
 import socket
 import threading
 from databse import initialize_database
-from databse import print_database 
+#from databse import print_database 
 import sqlite3
 import time
 
@@ -45,9 +45,4 @@ def start_server(host="192.168.236.160", port=8080):
 if __name__ == "__main__":
     
     initialize_database()
-<<<<<<< HEAD
     start_server()
- 
-=======
-    start_server()
->>>>>>> 44eb5479139a866b75bd72079dd58b8a7cc74b6f

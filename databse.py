@@ -33,13 +33,8 @@ def initialize_database(db_name="plant_management.db"):
     CREATE TABLE IF NOT EXISTS Owners (
         owner_id INTEGER PRIMARY KEY AUTOINCREMENT,
         owner_name TEXT NOT NULL,
-<<<<<<< HEAD
-        contact_info TEXT NOT NULL,
-        password TEXT NOT NULL
-=======
         email VARCHAR(40) UNIQUE,
         password VARCHAR(64) NOT NULL
->>>>>>> 44eb5479139a866b75bd72079dd58b8a7cc74b6f
     )
     """)
     cursor.execute("""
@@ -47,81 +42,14 @@ def initialize_database(db_name="plant_management.db"):
         ownership_id INTEGER PRIMARY KEY AUTOINCREMENT,
         owner_id INTEGER NOT NULL,
         plant_id INTEGER NOT NULL,
-<<<<<<< HEAD
         FOREIGN KEY (owner_id) REFERENCES Owners(owner_id) ON DELETE CASCADE,
         FOREIGN KEY (plant_id) REFERENCES Plants(plant_id) ON DELETE CASCADE
-=======
-        FOREIGN KEY (owner_id) REFERENCES Owners(owner_id),
-        FOREIGN KEY (plant_id) REFERENCES Plants(plant_id)
->>>>>>> 44eb5479139a866b75bd72079dd58b8a7cc74b6f
     )
     """)
 
     # Commit changes and close connection
     conn.commit()
     conn.close()
-<<<<<<< HEAD
-
-def print_database(db_name="plant_management.db"):
-    """
-    Prints all data from the database tables.
-    """
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-
-    tables = ["Plants", "Owners", "Changes", "Ownership"]
-
-    for table in tables:
-        print(f"\nTABLE: {table}")
-        cursor.execute(f"SELECT * FROM {table}")
-        rows = cursor.fetchall()
-
-        if rows:
-            for row in rows:
-                print(row)
-        else:
-            print("No data found.")
-
-    conn.close()
-
-# --- Example Data Insertion ---
-def insert_sample_data(db_name="plant_management.db"):
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-
-    # Add an owner
-    cursor.execute("INSERT INTO Owners (owner_name, contact_info, password) VALUES (?, ?, ?)",
-                   ("Alice", "alice@example.com", "securepassword"))
-
-    # Add a plant
-    cursor.execute("INSERT INTO Plants (plant_name, plant_type_name) VALUES (?, ?)",
-                   ("Rose", "Flowering Plant"))
-
-    # Log a change
-    cursor.execute("INSERT INTO Changes (plant_id, change_description, value) VALUES (?, ?, ?)",
-                   (1, "Watered the plant", "500ml"))
-
-    # Map owner to plant
-    cursor.execute("INSERT INTO Ownership (owner_id, plant_id) VALUES (?, ?)",
-                   (1, 1))
-
-    # Commit changes
-    conn.commit()
-    conn.close()
-
-if __name__ == "__main__":
-    try:
-        initialize_database()  # Ensure the database is initialized
-        print_database()
-        print("\nDatabase initialized and displayed successfully.")
-        insert_sample_data()
-        print_database()
-    except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
-
-# Uncomment the line below to insert sample data
-# insert_sample_data()
-=======
         
     # Example: Insert data into tables
     # Add an owner
@@ -163,4 +91,3 @@ if __name__ == "__main__":
 
     # Close the connection
     conn.close()
->>>>>>> 44eb5479139a866b75bd72079dd58b8a7cc74b6f
