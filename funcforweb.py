@@ -19,58 +19,6 @@ def get_most_recent_change(plant_id, change_description, db_name="plant_manageme
     conn.close()
     return result[0] if result else None
 
-def get_moisture_changes(plant_id, db_name="plant_management.db"):
-    """
-    Fetch all rows where change_description is 'moisture' for a specific plant_id.
-    """
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT * FROM Changes WHERE change_description = 'moisture' AND plant_id = ? ORDER BY time DESC LIMIT 1
-    """, (plant_id,))
-    results = cursor.fetchall()
-    conn.close()
-    return results
-
-def get_temperature_changes(plant_id, db_name="plant_management.db"):
-    """
-    Fetch all rows where change_description is 'temperature' for a specific plant_id.
-    """
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT * FROM Changes WHERE change_description = 'temperature' AND plant_id = ? ORDER BY time DESC LIMIT 1
-    """, (plant_id,))
-    results = cursor.fetchall()
-    conn.close()
-    return results
-
-def get_light_changes(plant_id, db_name="plant_management.db"):
-    """
-    Fetch all rows where change_description is 'light' for a specific plant_id.
-    """
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT * FROM Changes WHERE change_description = 'light' AND plant_id = ? ORDER BY time DESC LIMIT 1
-    """, (plant_id,))
-    results = cursor.fetchall()
-    conn.close()
-    return results
-
-def get_humidity_changes(plant_id, db_name="plant_management.db"):
-    """
-    Fetch all rows where change_description is 'humidity' for a specific plant_id.
-    """
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT * FROM Changes WHERE change_description = 'humidity' AND plant_id = ? ORDER BY time DESC LIMIT 1
-    """, (plant_id,))
-    results = cursor.fetchall()
-    conn.close()
-    return results
-
 def get_plants_for_owner(owner_id, db_name="plant_management.db"):
     """
     Retrieves all plant IDs associated with a given owner.
@@ -96,7 +44,7 @@ def add_plant_for_owner(owner_id, plant_name, db_name="plant_management.db"):
     INSERT INTO Plants (plant_name) VALUES (?)
     """, (plant_name,))
 
-    plant_id = cursor.lastrowid  # Get the newly inserted plant's ID
+    plant_id = cursor.lastrowid  
 
     # Assign the plant to the owner in the Ownership table
     cursor.execute("""
@@ -131,40 +79,15 @@ def add_owner(owner_name, email, password, db_name="plant_management.db"):
 
     return owner_id
 
-def update_email(owner_id, new_email, db_name="plant_management.db"):
-    """
-    Updates the contact information of an existing owner.
-    """
-    conn = sqlite3.connect(db_name)
+def verify_login(email, password):
+    conn = sqlite3.connect("plant_management.db")
     cursor = conn.cursor()
-
-    # Update the contact info for the given owner_id
-    cursor.execute("""
-    UPDATE Owners SET email = ? WHERE owner_id = ?
-    """, (new_email, owner_id))
-
-    # Commit changes and close the connection
-    conn.commit()
+    cursor.execute("SELECT owner_id, password FROM Owners WHERE email = ?", (email,))  # Add a comma after email
+    user = cursor.fetchone()
     conn.close()
 
-def remove_plant(plant_id, db_name="plant_management.db"):
-    """
-    Removes a plant from the database, including its ownership records.
-    """
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-
-    try:
-        # Step 1: Remove plant from Ownership table first (to maintain foreign key constraints)
-        cursor.execute("DELETE FROM Ownership WHERE plant_id = ?", (plant_id,))
-
-        # Step 2: Remove plant from Plants table
-        cursor.execute("DELETE FROM Plants WHERE plant_id = ?", (plant_id,))
-
-        # Commit changes
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        raise e
-    finally:
-        conn.close()
+    if user:
+        owner_id, hashed_password = user
+        if hashlib.sha256(password.encode()).hexdigest() == hashed_password:
+            return owner_id
+    return None

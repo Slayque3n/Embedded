@@ -18,15 +18,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def serve_frontend():
     return FileResponse("static/index.html")
-
-# Endpoint to get moisture changes for a plant
-@app.get("/moisture_changes/{plant_id}")
-async def get_moisture_changes(plant_id: int):
-    try:
-        results = funcforweb.get_moisture_changes(plant_id)
-        return JSONResponse(results)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
     
 @app.get("/most_recent_moisture/{plant_id}")
 async def get_most_recent_moisture(plant_id: int):
@@ -60,33 +51,6 @@ async def get_most_recent_humidity(plant_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# # Endpoint to get temperature changes for a plant
-# @app.get("/temperature_changes/{plant_id}")
-# async def get_temperature_changes(plant_id: int):
-#     try:
-#         results = funcforweb.get_temperature_changes(plant_id)
-#         return JSONResponse(results)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# # Endpoint to get light changes for a plant
-# @app.get("/light_changes/{plant_id}")
-# async def get_light_changes(plant_id: int):
-#     try:
-#         results = funcforweb.get_light_changes(plant_id)
-#         return JSONResponse(results)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-    
-# # Endpoint to get humidity changes for a plant
-# @app.get("/humidity_changes/{plant_id}")
-# async def get_humidity_changes(plant_id: int):
-#     try:
-#         results = funcforweb.get_humidity_changes(plant_id)
-#         return JSONResponse(results)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
 # Endpoint to get plants for an owner
 @app.get("/plants_for_owner/{owner_id}")
 async def get_plants_for_owner(owner_id: int):
@@ -95,18 +59,6 @@ async def get_plants_for_owner(owner_id: int):
         return JSONResponse(results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# Endpoint to add a plant for an owner
-# @app.post("/add_plant_for_owner")
-# async def add_plant_for_owner(
-#     owner_id: int = Form(...),
-#     plant_name: str = Form(...)
-# ):
-#     try:
-#         funcforweb.add_plant_for_owner(owner_id, plant_name)
-#         return JSONResponse({"status": "success", "message": "Plant added successfully"})
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
 
 # Endpoint to add a new owner
 @app.post("/add_owner")
@@ -121,40 +73,6 @@ async def add_owner(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Endpoint to update contact info for an owner
-@app.post("/update_email")
-async def update_email(
-    owner_id: int = Form(...),
-    new_email: str = Form(...)
-):
-    try:
-        funcforweb.update_email(owner_id, new_email)
-        return JSONResponse({"status": "success", "message": "Contact info updated successfully"})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# Endpoint to remove a plant
-# @app.post("/remove_plant")
-# async def remove_plant(request: Request):
-#     try:
-#         # Manually parse the JSON payload from the request body
-#         data = await request.json()
-#         plant_id = data.get("plant_id")
-
-#         # Validate that plant_id is provided and is an integer
-#         if plant_id is None:
-#             raise HTTPException(status_code=400, detail="plant_id is required")
-#         if not isinstance(plant_id, int):
-#             raise HTTPException(status_code=400, detail="plant_id must be an integer")
-
-#         # Call the function to remove the plant
-#         funcforweb.remove_plant(plant_id)
-#         return JSONResponse({"status": "success", "message": "Plant removed successfully"})
-#     except HTTPException as e:
-#         raise e  # Re-raise HTTPException to return the error response
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-    
 # Login endpoint
 @app.post("/login")
 async def login(request: Request):
@@ -162,7 +80,7 @@ async def login(request: Request):
     email = data.get("email")
     password = data.get("password")
 
-    owner_id = verify_login(email, password)
+    owner_id = funcforweb.verify_login(email, password)
     if owner_id:
         return JSONResponse({"status": "success", "owner_id": owner_id})
     else:
@@ -224,50 +142,8 @@ async def predict_plant_health(plant_id: int):
 
        # Call the ML model to predict plant health
         health_status = ml.predict_health(moisture, temperature, humidity, light)  # Use the ML function
-        health_status = str(health_status[0])  # Convert numpy array to int
-
-        # Map the health status to a human-readable string
-        # health_mapping = {
-        #     0: "Healthy",
-        #     1: "Moderate Stress",
-        #     2: "High Stress"
-        # }
-        # health_status_str = health_mapping.get(health_status, "Unknown")
-
+        health_status = str(health_status[0])  # Convert numpy array to str
         return JSONResponse({"health_status": health_status})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-        return JSONResponse({"health_status": health_status})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# @app.get("/plant_details/{plant_id}")
-# async def get_plant_details(plant_id: int):
-#     try:
-#         conn = sqlite3.connect("plant_management.db")
-#         cursor = conn.cursor()
-#         cursor.execute("SELECT plant_id, plant_name FROM Plants WHERE plant_id = ?", (plant_id,))
-#         plant = cursor.fetchone()
-#         conn.close()
-
-#         if plant:
-#             return JSONResponse({"plant_id": plant[0], "plant_name": plant[1]})
-#         else:
-#             raise HTTPException(status_code=404, detail="Plant not found")
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-def verify_login(email, password):
-    conn = sqlite3.connect("plant_management.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT owner_id, password FROM Owners WHERE email = ?", (email,))  # Add a comma after email
-    user = cursor.fetchone()
-    conn.close()
-
-    if user:
-        owner_id, hashed_password = user
-        if hashlib.sha256(password.encode()).hexdigest() == hashed_password:
-            return owner_id
-    return None
