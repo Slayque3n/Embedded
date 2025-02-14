@@ -57,17 +57,17 @@ def initialize_database(db_name="plant_management.db"):
     cursor = conn.cursor()
 
     cursor.execute("INSERT INTO Owners (owner_name,email,password) VALUES (?, ?,?)",
-                ("Alice", "alice@example.com", hashlib.sha256("Password".encode()).hexdigest()))
+                ("Alice", "alice@example.com", hashlib.sha256("password".encode()).hexdigest()))
 
     # Log a change
     cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
-                (1, "moisture","94"))
+                (1, "moisture","20"))
     cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
-                (1, "temperature","29"))
+                (1, "temperature","20"))
     cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
-                (1, "light","7"))
+                (1, "light","20"))
     cursor.execute("INSERT INTO Changes (plant_id, change_description,value) VALUES (?, ?,?)",
-                (1, "humidity","60"))
+                (1, "humidity","20"))
 
     # Map owner to plant
     cursor.execute("INSERT INTO Ownership (owner_id, plant_id) VALUES (?, ?)",

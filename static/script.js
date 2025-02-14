@@ -4,13 +4,7 @@ let currentPlantIndex = 0;
 
 // Function to update the plant status
 async function updatePlant() {
-    const select = document.getElementById("plant-select");
-    const plantId = select.value; // Get the selected plant's ID
-
-    if (!plantId) {
-        alert("No plant selected!");
-        return;
-    }
+    const plantId = 1;
 
     try {
         // Fetch the most recent values for each category
@@ -21,12 +15,13 @@ async function updatePlant() {
 
         // Update the UI with the fetched values
         document.getElementById("moisture").textContent = moisture !== null ? `${moisture}%` : "N/A";
-        document.getElementById("light").textContent = light !== null ? `${light}%` : "N/A";
+        document.getElementById("light").textContent = light !== null ? `${light} lux` : "N/A";
         document.getElementById("temperature").textContent = temperature !== null ? `${temperature}°C` : "N/A";
         document.getElementById("humidity").textContent = humidity !== null ? `${humidity}%` : "N/A";
 
-        // Update the plant icon based on the new values
-        updatePlantIcon();
+        //Update the plant icon based on the new values
+        //updatePlantIcon();
+        await updatePlantHealthIndicator(plantId);
     } catch (error) {
         console.error("Error updating plant status:", error);
         alert("Failed to update plant status. Please try again.");
@@ -87,80 +82,91 @@ function updatePlantIcon() {
 }
 
 // Function to register a new plant
-function registerNewPlant() {
-    const plantName = prompt("Enter a name for your new plant:");
-    if (plantName) {
-        // Assuming the owner ID is known (e.g., stored in a variable or retrieved from the session)
-        const ownerId = 1; // Replace this with the actual owner ID (e.g., from login)
+// function registerNewPlant() {
+//     const plantName = prompt("Enter a name for your new plant:");
+//     if (plantName) {
+//         // Assuming the owner ID is known (e.g., stored in a variable or retrieved from the session)
+//         const ownerId = 1; // Replace this with the actual owner ID (e.g., from login)
 
-        // Call the backend to add the plant
-        addPlantForOwner(ownerId, plantName)
-            .then(() => {
-                // Refresh the plant list after adding a new plant
-                fetchPlantsForOwner(ownerId);
-            })
-            .catch(error => {
-                console.error("Error adding plant:", error);
-                alert("Failed to add the plant. Please try again.");
-            });
-    }
-}
+//         // Call the backend to add the plant
+//         addPlantForOwner(ownerId, plantName)
+//             .then(() => {
+//                 // Refresh the plant list after adding a new plant
+//                 fetchPlantsForOwner(ownerId);
+//             })
+//             .catch(error => {
+//                 console.error("Error adding plant:", error);
+//                 alert("Failed to add the plant. Please try again.");
+//             });
+//     }
+// }
 
 // Function to remove the currently selected plant
-// script.js
-async function removePlant() {
-    const select = document.getElementById("plant-select");
-    const plantId = select.value; // Get the selected plant's ID
+// async function removePlant() {
+//     const select = document.getElementById("plant-select");
+//     const plantId = select.value; // Get the selected plant's ID
 
-    if (!plantId) {
-        alert("No plant selected!");
-        return;
-    }
+//     if (!plantId) {
+//         alert("No plant selected!");
+//         return;
+//     }
 
-    if (confirm(`Are you sure you want to remove this plant?`)) {
-        try {
-            const response = await fetch("/remove_plant", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ plant_id: parseInt(plantId) }) // Ensure plant_id is sent as an integer
-            });
+//     if (confirm(`Are you sure you want to remove this plant?`)) {
+//         try {
+//             const response = await fetch("/remove_plant", {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json"
+//                 },
+//                 body: JSON.stringify({ plant_id: parseInt(plantId) }) // Ensure plant_id is sent as an integer
+//             });
 
-            if (response.ok) {
-                alert("Plant removed successfully!");
-                // Refresh the plant list after removal
-                const ownerId = 1; // Replace with the actual owner ID
-                fetchPlantsForOwner(ownerId);
-            } else {
-                const errorData = await response.json();
-                alert(`Failed to remove plant: ${errorData.detail}`);
-            }
-        } catch (error) {
-            console.error("Error removing plant:", error);
-            alert("Failed to remove plant. Please try again.");
-        }
-    }
-}
+//             if (response.ok) {
+//                 alert("Plant removed successfully!");
+//                 // Refresh the plant list after removal
+//                 const ownerId = 1; // Replace with the actual owner ID
+//                 fetchPlantsForOwner(ownerId);
+//             } else {
+//                 const errorData = await response.json();
+//                 alert(`Failed to remove plant: ${errorData.detail}`);
+//             }
+//         } catch (error) {
+//             console.error("Error removing plant:", error);
+//             alert("Failed to remove plant. Please try again.");
+//         }
+//     }
+// }
 
 // Function to update the dropdown menu with registered plants
-function updatePlantDropdown(plants) {
-    const select = document.getElementById("plant-select");
-    select.innerHTML = ""; // Clear existing options
+// function updatePlantDropdown(plants) {
+//     const select = document.getElementById("plant-select");
+//     select.innerHTML = ""; // Clear existing options
 
-    plants.forEach((plant, index) => {
-        const option = document.createElement("option");
-        option.value = plant.plant_id; // Use plant_id as the value
-        option.textContent = plant.plant_name; // Use plant_name as the display text
-        select.appendChild(option);
-    });
+//     plants.forEach((plant, index) => {
+//         const option = document.createElement("option");
+//         option.value = plant.plant_id; // Use plant_id as the value
+//         option.textContent = plant.plant_name; // Use plant_name as the display text
+//         select.appendChild(option);
+//     });
 
-    // Switch to the newly added plant
-    if (plants.length > 0) {
-        currentPlantIndex = plants.length - 1;
-        switchPlant();
-    }
-}
+//     // Switch to the newly added plant
+//     if (plants.length > 0) {
+//         currentPlantIndex = plants.length - 1;
+//         switchPlant();
+//     }
+// }
+
+// function switchPlant() {
+//     const select = document.getElementById("plant-select");
+//     currentPlantIndex = parseInt(select.value);
+//     // Update the UI with the selected plant's data
+//     const currentPlant = plants[currentPlantIndex];
+//     document.getElementById("moisture").textContent = currentPlant.moisture + "%";
+//     document.getElementById("light").textContent = currentPlant.light + "%";
+//     document.getElementById("temperature").textContent = currentPlant.temperature + "°C";
+//     document.getElementById("humidity").textContent = currentPlant.humidity + "%";
+//     updatePlantIcon();
+// }
 
 async function fetchMoistureChanges(plantId) {
     const response = await fetch(`/moisture_changes/${plantId}`);
@@ -219,41 +225,57 @@ async function fetchPlantsForOwner(ownerId) {
     }
 }
 
-// script.js
-async function removePlant() {
-    const select = document.getElementById("plant-select");
-    const plantId = select.value; // Get the selected plant's ID
+async function updatePlantHealthIndicator(plantId) {
+    try {
+        const response = await fetch(`/predict_plant_health/${plantId}`);
+        const data = await response.json();
 
-    if (!plantId) {
-        alert("No plant selected!");
-        return;
-    }
-
-    if (confirm(`Are you sure you want to remove this plant?`)) {
-        try {
-            const response = await fetch("/remove_plant", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json" // Ensure the correct content type
-                },
-                body: JSON.stringify({ plant_id: parseInt(plantId) }) // Send plant_id as an integer in JSON format
-            });
-
-            if (response.ok) {
-                alert("Plant removed successfully!");
-                // Refresh the plant list after removal
-                const ownerId = 1; // Replace with the actual owner ID
-                fetchPlantsForOwner(ownerId);
-            } else {
-                const errorData = await response.json();
-                alert(`Failed to remove plant: ${errorData.detail}`);
-            }
-        } catch (error) {
-            console.error("Error removing plant:", error);
-            alert("Failed to remove plant. Please try again.");
+        // Update the UI with the health status
+        const healthIndicator = document.getElementById("health-indicator");
+        if (healthIndicator) {
+            healthIndicator.textContent = `Health Status: ${data.health_status}`;
+        } else {
+            console.error("Health indicator element not found!");
         }
+    } catch (error) {
+        console.error("Error updating plant health indicator:", error);
     }
 }
+
+// async function removePlant() {
+//     const select = document.getElementById("plant-select");
+//     const plantId = select.value; // Get the selected plant's ID
+
+//     if (!plantId) {
+//         alert("No plant selected!");
+//         return;
+//     }
+
+//     if (confirm(`Are you sure you want to remove this plant?`)) {
+//         try {
+//             const response = await fetch("/remove_plant", {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json" // Ensure the correct content type
+//                 },
+//                 body: JSON.stringify({ plant_id: parseInt(plantId) }) // Send plant_id as an integer in JSON format
+//             });
+
+//             if (response.ok) {
+//                 alert("Plant removed successfully!");
+//                 // Refresh the plant list after removal
+//                 const ownerId = 1; // Replace with the actual owner ID
+//                 fetchPlantsForOwner(ownerId);
+//             } else {
+//                 const errorData = await response.json();
+//                 alert(`Failed to remove plant: ${errorData.detail}`);
+//             }
+//         } catch (error) {
+//             console.error("Error removing plant:", error);
+//             alert("Failed to remove plant. Please try again.");
+//         }
+//     }
+// }
 
 // Function to create bubbles for the background animation
 function createBubbles() {
@@ -272,6 +294,8 @@ function createBubbles() {
 
 // Initialize the app
 function init() {
+    plants = [];
+
     // Register a default plant
     plants.push({
         name: "Default Plant",
@@ -282,8 +306,8 @@ function init() {
     });
 
     // Update the dropdown and UI
-    updatePlantDropdown();
-    switchPlant();
+    //updatePlantDropdown(plants);
+    // switchPlant();
     createBubbles();
 }
 
