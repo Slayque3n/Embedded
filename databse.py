@@ -75,9 +75,12 @@ def initialize_database(db_name="plant_management.db"):
 
     # Commit changes
     conn.commit()
-
+if __name__ == "__main__":
+    db_name="plant_management.db"
     # # Query and display data
     # print("Changes:")
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
     for row in cursor.execute("SELECT * FROM Changes"):
         print(row)
 

@@ -18,6 +18,7 @@ def handle_client(client_socket, address):
             client_socket.send("Message received".encode('utf-8'))
             id, data = message.split(":")
             type, value = data.split(",")
+
             conn = sqlite3.connect("plant_management.db")
             cursor = conn.cursor()
             cursor.execute("""
@@ -43,6 +44,5 @@ def start_server(host="192.168.236.160", port=8080):
         time.sleep(0.01)
 
 if __name__ == "__main__":
-    
     initialize_database()
     start_server()
